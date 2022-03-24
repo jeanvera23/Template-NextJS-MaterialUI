@@ -1,6 +1,6 @@
+import jwt_decode from "jwt-decode";
 
 import { config } from '../../settings';
-
 import { setAlert } from '../alert/alert.actions'
 
 export const fetchStart = () => ({
@@ -26,22 +26,13 @@ const login = (credentials) => async (dispatch) => {
     dispatch(fetchStart());
 
     const body = {
-        "email": email,
+        "username": email,
         "password": password
     };
     console.log(body);
     const url = `${config.connectionString}/api/auth`;
     console.log(url);
-    dispatch({
-        type: 'LOGIN_SUCCESS',
-        payload: {
-            userId: 1,
-            firstName: "Jean",
-            lastName: "Vera",
-            token: "12345"
-        }
-    });
-    /* try {
+    try {
         const response = await fetch(url, {
             headers: {
                 'Content-Type': 'application/json'
@@ -53,12 +44,15 @@ const login = (credentials) => async (dispatch) => {
         console.log(res);
         dispatch(fetchSuccess());
         if (res.token) {
+
+            let decodedToken = jwt_decode(res.token);
+
+            console.log(decodedToken);
+
             dispatch({
                 type: 'LOGIN_SUCCESS',
                 payload: {
-                    userId: res.userId,
-                    firstName: res.firstName,
-                    lastName: res.lastName,
+                    ...decodedToken,
                     token: res.token
                 }
             });
@@ -70,7 +64,7 @@ const login = (credentials) => async (dispatch) => {
         console.log(error.message);
         dispatch(fetchFailure(error.message));
         dispatch(setAlert({ msg: "Access denied" }));
-    } */
+    }
 };
 const logout = () => async (dispatch) => {
     dispatch({
@@ -82,26 +76,31 @@ const logout = () => async (dispatch) => {
 const getUsers = () => async (dispatch, getState) => {
     const state = getState();
     dispatch(fetchStart());
-
+    console.log(state.userReducer.currentUser.token)
     try {
-        const response = await fetch(`${settings.connectionString}/api/users`, {
+        const response = await fetch(`${config.connectionString}/api/users`, {
             headers: {
                 'Content-Type': 'application/json',
-                'x-auth-token': state.userReducer.currentUser.token
+                'Authorization': 'Bearer ' + state.userReducer.currentUser.token
             },
             method: 'GET'
         });
-        const res = await response.json();
-        dispatch({
-            type: "GET_USERS",
-            payload: res
-        });
+        console.log(response);
+        if (response.status == 200) {
+            const res = await response.json();
+
+            dispatch({
+                type: "GET_USERS",
+                payload: res
+            });
+        }
+
 
     } catch (error) {
         dispatch(fetchFailure(error));
         console.log(error);
     }
-    
+
 };
 
 

@@ -1,4 +1,4 @@
 
 export const config = {
-    connectionString: "http://localhost:5000" 
+    connectionString: "https://smart-choice-melb.herokuapp.com" 
 }

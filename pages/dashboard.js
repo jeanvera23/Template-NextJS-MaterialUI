@@ -9,12 +9,21 @@ import ProtectedRoute from '../components/GeneralComponents/Blocks/ProtectedRout
 import { Button, Typography } from '@mui/material';
 
 import userActions from '../redux/user/user.actions';
+import { Box } from '@mui/system';
 
 const Dashboard = () => {
 
     const router = useRouter();
-    const userReducer = useSelector((state) => state.userReducer);
+    const users = useSelector((state) => state.userReducer.users);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        fetchData();
+    }, [])
+
+    const fetchData = async () => {
+        dispatch(userActions.getUsers());
+    }
 
     const onLogoutClick = () => {
         console.log("onLogoutClick")
@@ -23,11 +32,17 @@ const Dashboard = () => {
     }
 
     return (
-        <div>
-            <Typography>Dashboard</Typography>
-
+        <>
             <Button onClick={onLogoutClick}>logout</Button>
-        </div>
+            <Typography variant='h5'>Dashboard</Typography>
+            <Box pt={2}>
+                {users.length > 0 &&
+                    users.map(item => (
+                        <Typography>{item.firstName + " " + item.lastName + " (" + item.username+ ")"} </Typography>
+                    ))
+                }
+            </Box>
+        </>
     )
 }
 
