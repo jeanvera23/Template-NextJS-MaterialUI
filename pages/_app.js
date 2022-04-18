@@ -4,6 +4,7 @@ import { Provider } from 'react-redux'
 import { useStore } from '../redux/store'
 
 import "inter-ui/inter.css";
+import "../app.css";
 
 const MyApp = ({
   Component,

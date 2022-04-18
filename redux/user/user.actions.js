@@ -104,9 +104,40 @@ const getUsers = () => async (dispatch, getState) => {
 };
 
 
+const insetParticipant = (body) => async (dispatch, getState) => {
+    const state = getState();
+    dispatch(fetchStart());
+    console.log(state.userReducer.currentUser.token)
+
+    try {
+        const response = await fetch(`${config.connectionString}/api/participants`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + state.userReducer.currentUser.token
+            },
+            method: 'POST',
+            body: JSON.stringify(body)
+        });
+        const res = await response.json();
+        console.log("res");
+        console.log(res);
+        if (response.status == 200) {
+            const res = await response.json();
+
+        }
+
+
+    } catch (error) {
+        dispatch(fetchFailure(error));
+        console.log(error);
+    }
+
+};
+
 const userActions = {
     login,
     logout,
     getUsers,
+    insetParticipant
 }
 export default userActions;
